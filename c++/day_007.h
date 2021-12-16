@@ -1,17 +1,22 @@
 #ifndef DAY_007_
 #define DAY_007_
 #include <string>
+#include <vector>
 
 using namespace std;
 
 class Solution
 {
 private:
-    string m_file_path;
+    static constexpr int MAX_VALUE = 20;
+    string m_data_file;
+    size_t parse_and_anaylize();
+    // vector<int> deltas;
+    int deltas[MAX_VALUE]={0};
 
 public:
     Solution(string data_file):
-        m_file_path(data_file){};
+        m_data_file(data_file){};
     ~Solution(){};
 
     size_t part1();
