@@ -1,5 +1,5 @@
-#ifndef Solution_H_
-#define Solution_H_
+#ifndef DA7_006_H_
+#define DA7_006_H_
 
 #include <vector>
 #include <string>
@@ -28,4 +28,4 @@ public:
     size_t part2(size_t number_days);
 };
 
-#endif // Solution_H_
+#endif // DA7_006_H_
