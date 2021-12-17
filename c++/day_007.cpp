@@ -14,7 +14,7 @@
 #include <fstream>
 #include <vector>
 
-size_t Solution::parse_and_anaylize()
+size_t Solution::parse_and_anaylize(Part part)
 {
     // Create a text string, which is used to output the text file
     string line;
@@ -44,7 +44,7 @@ size_t Solution::parse_and_anaylize()
                 position_next = line.find(delimiter, position_current+1);
                 string move_str = line.substr(position_current, position_next-position_current);
                 position_current=position_next+1;
-                cout << move_str << ',';
+                // cout << move_str << ',';
                 int cur_value = stoi(move_str);
                 // day_bookkeeper[key] = day_bookkeeper[key]+1;
                 if (cur_value<MAX_VALUE)
@@ -67,33 +67,71 @@ size_t Solution::parse_and_anaylize()
     }
     printf("\n");
 
+    // calculate incremental costs for part 2
+    vector<int> incremental_costs(max_value-min_value);
+    int current_cost = 0;
+    for (size_t i =0; i <= max_value-min_value; i++)
+    {
+        current_cost+=i;
+        incremental_costs[i]=current_cost;
+        printf("incremental_cost[%4i]=%7i\n",i, current_cost);
+    }
+
     printf("min: %i\n", min_value);
     printf("max: %i\n", max_value);
 
-    
-    for (size_t i = min_value; i <= max_value; i++)
-    {
-        if(deltas[i]!=0)
-            printf("number %2i values: %3i\n", i, deltas[i]);
-    }
-    
 
-    return count;
+    int best_position = 0;
+    int best_cost = 0;
+    for (int ipos = min_value; ipos <= max_value; ipos++)
+    {
+        int current_cost = 0;
+        // loop through each group of locations and determine distance cost
+        for (int iloc = min_value; iloc <= max_value; iloc++)
+        {
+            if(deltas[iloc]!=0)
+            {
+                if (part==Part::ONE)
+                    current_cost += abs(iloc-ipos)*deltas[iloc];
+                else if(part==Part::TWO)
+                    current_cost += incremental_costs[abs(iloc-ipos)]*deltas[iloc];
+            }
+        }
+        printf("position (%4i) with cost (%8i)\n",ipos,current_cost);
+        if(ipos==min_value)
+        {
+            best_position = ipos;
+            best_cost = current_cost;
+        }
+        else
+        {
+            if(current_cost < best_cost)
+            {
+                best_position = ipos;
+                best_cost = current_cost;
+                printf("better position (%4i) with cost (%8i)\n",ipos,current_cost);
+            }
+        }
+        // printf("cost of position %3i: %i\n",ipos,current_cost);
+    }
+
+    return best_cost;
 };
 
-size_t Solution::part1()
+size_t Solution::part1_2(Part part)
 {
-    return parse_and_anaylize();
+    return parse_and_anaylize( part);
 }
 
 int main(int argc, char const *argv[])
 {
-    string data_file = "day_007_example.txt";
-    // string data_file = "day_007.txt";
+    // string data_file = "day_007_example.txt";
+    string data_file = "day_007.txt";
 
     Solution solution(data_file);
 
-    solution.part1();
+    // printf("best position fuel cost: %i\n", solution.part1_2(Solution::Part::ONE));
+    printf("best position fuel cost: %i\n", solution.part1_2(Solution::Part::TWO));
 
     return 0;
 }
