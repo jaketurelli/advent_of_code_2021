@@ -14,6 +14,28 @@ public:
     };
 private:
     string m_data_file;
+
+
+    ///////////////////////////////////////////////
+    /// @brief returns true if a is fully masked by b
+    /// 
+    /// @param a 
+    /// @param b 
+    /// @return true 
+    /// @return false 
+    ///////////////////////////////////////////////
+    bool fully_masked(string a, string b);
+
+    ///////////////////////////////////////////////
+    /// @brief returns number of segments a has more than b
+    /// 
+    /// @param a 
+    /// @param b 
+    /// @return int 
+    ///////////////////////////////////////////////
+    int get_mask_delta(string a, string b);
+
+
     size_t parse_and_anaylize(Part part);
 
     static constexpr int SEGS_PER_DIGIT[10]={
