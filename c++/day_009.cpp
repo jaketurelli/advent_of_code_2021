@@ -13,7 +13,7 @@
 #include <iostream>
 
 
-void Solution::fill_array(string& line, uint8_t array[], size_t size_of_array)
+void Solution::fill_array(string& line, uint8_t* array, size_t size_of_array)
 {
     for (size_t i = 0; i < size_of_array; i++)
     {
@@ -24,7 +24,7 @@ void Solution::fill_array(string& line, uint8_t array[], size_t size_of_array)
 void Solution::add_low_point(uint8_t value, int row, int col)
 {
     m_low_points.push_back(value);
-    printf("low point: %1i (%3i,%3i)\n", value, row, col);
+    // printf("low point: %1i (%3i,%3i)\n", value, row, col);
 }
 
 size_t Solution::parse_and_analyze()
@@ -38,119 +38,154 @@ size_t Solution::parse_and_analyze()
 
     // determine number of digits per line
     
-    getline(data_stream, line_previous);
-    const int N_DATA = line_previous.length();
+    getline(data_stream, line_current);
+    const int N_DATA = line_current.length();
+    // printf("N_DATA: %i\n", N_DATA);
 
-    uint8_t data_previous[N_DATA] = {0};
-    uint8_t data_current[N_DATA] = {0};
-    uint8_t data_next[N_DATA] = {0};
+    uint8_t data_0[N_DATA] = {0};
+    uint8_t data_1[N_DATA] = {0};
+    uint8_t data_2[N_DATA] = {0};
 
-    uint8_t* data_previous_p[N_DATA] = {0};
-    uint8_t* data_current_p[N_DATA] = {0};
-    uint8_t* data_next_p[N_DATA] = {0};
+    uint8_t* const pointer_bookie[3] = { &data_0[0],
+                                         &data_1[0],
+                                         &data_2[0]};
 
-    fill_array(line_previous,data_previous,N_DATA);
-    fill_array(line_current, data_current,N_DATA);
+    uint8_t* data_previous_p = nullptr;
+    uint8_t* data_current_p  = pointer_bookie[0];
+    uint8_t* data_next_p =     pointer_bookie[1];
+
+    fill_array(line_current, data_current_p,N_DATA);
+    getline(data_stream, line_next);
+    fill_array(line_next, data_next_p,N_DATA);
 
     int current_line_number = 0;
 
     // somethign different for first line
     for (size_t i = 0; i < N_DATA; i++)
     {
+        // printf("%i ", data_current_p[i]);
         if( i==0 && 
-            data_previous[i] < data_previous[i+1] &&
-            data_previous[i] < data_current[i] )
+            data_current_p[i] < data_current_p[i+1] &&
+            data_current_p[i] < data_next_p[i] )
         {
-            add_low_point(data_previous[i], current_line_number, i);
+            add_low_point(data_current_p[i], current_line_number, i);
         }
 
         else if( i==(N_DATA-1) && 
-                    data_previous[i] < data_previous[i-1] &&
-                    data_previous[i] < data_current[i])
+                    data_current_p[i] < data_current_p[i-1] &&
+                    data_current_p[i] < data_next_p[i])
         {
-            add_low_point(data_previous[i], current_line_number, i);
+            add_low_point(data_current_p[i], current_line_number, i);
         }
 
-        else if( data_previous[i] < data_previous[i+1] && 
-                 data_previous[i] < data_previous[i-1] && 
-                 data_previous[i] < data_current[i])
+        else if( data_current_p[i] < data_current_p[i+1] && 
+                 data_current_p[i] < data_current_p[i-1] && 
+                 data_current_p[i] < data_next_p[i])
         {
-            add_low_point(data_previous[i], current_line_number, i);
+            add_low_point(data_current_p[i], current_line_number, i);
         }
 
         
     }
-    
+    // printf("\n");
+
+    current_line_number++;
     while(getline(data_stream, line_next))
     {
-        current_line_number++;
-        fill_array(line_next,data_next,N_DATA);
+        
+        data_previous_p = pointer_bookie[(current_line_number-1)%3];
+        data_current_p  = pointer_bookie[current_line_number%3];
+        data_next_p     = pointer_bookie[(current_line_number+1)%3];
+
+
+        fill_array(line_next,data_next_p,N_DATA);
+        
 
         for (size_t i = 0; i < N_DATA; i++)
         {
-            if( i==0 && 
-                data_current[i] < data_current[i+1] &&
-                data_current[i] < data_next[i] && 
-                data_current[i] < data_previous[i])
+            // printf("%i ", data_current_p[i]);
+            if( i==0 )
             {
-                add_low_point(data_current[i], current_line_number, i);
+                // printf("%i vs (%i, %i, %i) ", data_current_p[i], data_current_p[i+1], data_next_p[i], data_previous_p[i]);
+                if( data_current_p[i] < data_current_p[i+1] &&
+                    data_current_p[i] < data_next_p[i] && 
+                    data_current_p[i] < data_previous_p[i])
+                {
+                    add_low_point(data_current_p[i], current_line_number, i);
+                }
+            }
+            else if( i==(N_DATA-1))
+            {
+                // printf("%i vs (%i, %i, %i) ", data_current_p[i], data_current_p[i-1], data_next_p[i], data_previous_p[i]);
+                if(  data_current_p[i] < data_current_p[i-1] &&
+                     data_current_p[i] < data_next_p[i] && 
+                     data_current_p[i] < data_previous_p[i])
+                {
+
+                    add_low_point(data_current_p[i], current_line_number, i);
+                }
             }
 
-            else if( i==(N_DATA-1) && 
-                     data_current[i] < data_current[i-1] &&
-                     data_current[i] < data_next[i] && 
-                     data_current[i] < data_previous[i])
+            else 
             {
-                add_low_point(data_current[i], current_line_number, i);
+                // printf("%i ", data_current_p[i]);
+                // printf("%i vs (%i, %i, %i, %i) ", data_current_p[i], data_current_p[i+1], data_current_p[i-1], data_next_p[i], data_previous_p[i]);
+                if( data_current_p[i] < data_current_p[i+1] && 
+                     data_current_p[i] < data_current_p[i-1] && 
+                     data_current_p[i] < data_next_p[i] && 
+                     data_current_p[i] < data_previous_p[i])
+                {
+                    add_low_point(data_current_p[i], current_line_number, i);
+                }
             }
-
-            else if( data_current[i] < data_current[i+1] && 
-                     data_current[i] < data_current[i-1] && 
-                     data_current[i] < data_next[i] && 
-                     data_current[i] < data_previous[i])
-            {
-                add_low_point(data_current[i], current_line_number, i);
-            }
-
             
         }
-        data_previous_p = data_current_p;
-        data_current_p = data_next_p;
+        
+        current_line_number++;
+        // printf("\n");
     }
+
+    data_previous_p = pointer_bookie[(current_line_number-1)%3];
+    data_current_p  = pointer_bookie[current_line_number%3];
 
     // somethign different for first line
     for (size_t i = 0; i < N_DATA; i++)
     {
+        // printf("%i ", data_current_p[i]);
         if( i==0 && 
-            data_next[i] < data_next[i+1] &&
-            data_next[i] < data_current[i] )
+            data_current_p[i] < data_current_p[i+1] &&
+            data_current_p[i] < data_previous_p[i] )
         {
-            add_low_point(data_next[i], current_line_number, i);
+            add_low_point(data_current_p[i], current_line_number, i);
         }
 
         else if( i==(N_DATA-1) && 
-                    data_next[i] < data_next[i-1] &&
-                    data_next[i] < data_current[i])
+                    data_current_p[i] < data_current_p[i-1] &&
+                    data_current_p[i] < data_previous_p[i])
         {
-            add_low_point(data_next[i], current_line_number, i);
+            add_low_point(data_current_p[i], current_line_number, i);
         }
 
-        else if( data_next[i] < data_next[i+1] && 
-                 data_next[i] < data_next[i-1] && 
-                 data_next[i] < data_current[i])
+        else if( data_current_p[i] < data_current_p[i+1] && 
+                 data_current_p[i] < data_current_p[i-1] && 
+                 data_current_p[i] < data_previous_p[i])
         {
-            add_low_point(data_next[i], current_line_number, i);
+            add_low_point(data_current_p[i], current_line_number, i);
         }
 
         
     }
-
-    // for (size_t i = 0; i < N_DATA; i++)
-    // {
-    //     printf("%i",line_0[i]);
-    // }
     // printf("\n");
-    return 0;
+
+    printf("Low points: \n");
+    int risk_level_total = 0;
+    for (auto i = m_low_points.begin(); i != m_low_points.end(); i++)
+    {
+        risk_level_total += *i+1;
+        printf("%i ",*i);
+    }
+    printf("\n");
+    return risk_level_total;
     
 }
 
@@ -161,7 +196,8 @@ size_t Solution::solve()
 
 int main(int argc, char const *argv[])
 {
-    string data_file = "day_009_example.txt";
+    // string data_file = "day_009_example.txt";
+    string data_file = "day_009.txt";
     Solution solution(data_file);
     printf("part1: %llu\n", solution.solve());
     return 0;
