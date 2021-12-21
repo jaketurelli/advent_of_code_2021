@@ -23,7 +23,7 @@ void Solution::fill_array(string& line, uint8_t* array, size_t size_of_array)
 
 void Solution::add_low_point(uint8_t value, int row, int col)
 {
-    m_low_points.push_back(value);
+    m_low_points.push_back(LowPoint(value, row, col));
     // printf("low point: %1i (%3i,%3i)\n", value, row, col);
 }
 
@@ -40,6 +40,7 @@ size_t Solution::parse_and_analyze()
     
     getline(data_stream, line_current);
     const int N_DATA = line_current.length();
+    m_n_cols = N_DATA;
     // printf("N_DATA: %i\n", N_DATA);
 
     uint8_t data_0[N_DATA] = {0};
@@ -144,6 +145,7 @@ size_t Solution::parse_and_analyze()
         current_line_number++;
         // printf("\n");
     }
+    m_n_rows = current_line_number+1;
 
     data_previous_p = pointer_bookie[(current_line_number-1)%3];
     data_current_p  = pointer_bookie[current_line_number%3];
@@ -181,17 +183,58 @@ size_t Solution::parse_and_analyze()
     int risk_level_total = 0;
     for (auto i = m_low_points.begin(); i != m_low_points.end(); i++)
     {
-        risk_level_total += *i+1;
-        printf("%i ",*i);
+        risk_level_total += i->val+1;
+        printf("%i (%3i,%3i)\n",i->val,i->row,i->col);
     }
     printf("\n");
     return risk_level_total;
     
 }
 
+size_t Solution::get_basin_value(uint8_t row, uint8_t col, uint8_t val);
+{
+    start here
+    if(get_basin_value())
+}
+
+
+void Solution::parse_and_fill_matrix()
+{
+    printf("hi?\n");
+    string line;
+    ifstream data_stream(m_data_file);
+    printf("creating matrix [%llu][%llu]\n",m_n_rows,m_n_cols);
+    uint8_t data_matrix[m_n_rows][m_n_cols]={0};
+    size_t curr_row = 0;
+    printf("writing data to matrix.\n");
+    while(getline(data_stream, line))
+    {
+        for (size_t i = 0; i < line.length(); i++)
+        {
+            uint8_t val = line[i]-'0';
+            // printf("%i", val);
+            data_matrix[curr_row][i] = val;
+        }
+        // printf(" (%i)\n",curr_row);
+        curr_row++;
+
+    }
+
+    // recursively find paths
+    for (auto i = m_low_points.begin(); i != m_low_points.end(); i++)
+    {
+        size_t basin_value = get_basin_value(i->row, i->col, i->val);
+    }
+    printf("\n");
+    
+    printf("done writing data to matrix.\n");
+}
+
 size_t Solution::solve()
 {
-    return parse_and_analyze();
+    size_t number_low_points =  parse_and_analyze();
+    parse_and_fill_matrix();
+    return number_low_points;
 }
 
 int main(int argc, char const *argv[])
