@@ -9,7 +9,7 @@ private:
     /* data */
     string m_data_file;
 
-    map<char, char> pairs = {
+    map<char, char> m_pairs = {
         {'(', ')'},
         {'[', ']'},
         {'{', '}'},
@@ -19,16 +19,11 @@ private:
         {'}', '{'},
         {'>', '<'}};
 
-    map<char, int> openers = {
-        {'(', 0},
-        {'[', 0},
-        {'{', 0},
-        {'<', 0}};
-    map<char, int> closers = {
-        {')', 0},
-        {']', 0},
-        {'}', 0},
-        {'>', 0}};
+    map<char, int> m_points = {
+        {')', 3},
+        {']', 57},
+        {'}', 1197},
+        {'>', 25137}};
 
 public:
     Solution(string data_file) : m_data_file(data_file){};

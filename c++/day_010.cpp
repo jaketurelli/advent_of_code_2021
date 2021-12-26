@@ -8,40 +8,52 @@
 /// @copyright Copyright (c) 2021
 ///
 ///////////////////////////////////////////////
+#include "day_010.h"
+
 #include <fstream>
 #include <iostream>
-#include "day_010.h"
+#include <stack>
+
+//todo: need to do more of a push/pop child/parent solution
 
 int Solution::part1()
 {
     string line;
     ifstream data_stream(m_data_file);
+    int score = 0;
 
     while (getline(data_stream, line))
     {
+        stack<char> m_part1_stack;
+
         for (size_t i = 0; i < line.length(); i++)
         {
             char cur_char = line[i];
-            char cur_char_pair = pairs[cur_char];
+            char cur_char_pair = m_pairs[cur_char];
             if (cur_char == '(' || cur_char == '[' || cur_char == '{' || cur_char == '<')
 
             {
-                openers[cur_char]++;
-                printf("openers[%c]: %i\n", cur_char, openers[cur_char]);
+                // openers[cur_char]++;
+                m_part1_stack.push(cur_char);
+                // printf("openers[%c]: %i\n", cur_char, openers[cur_char]);
             }
             else
             {
-                closers[cur_char]++;
-                printf("closers[%c]: %i\n", cur_char, closers[cur_char]);
-                if (closers[cur_char] > openers[cur_char_pair])
+                // closers[cur_char]++;
+                if (m_part1_stack.top() == cur_char_pair)
+                    m_part1_stack.pop();
+                else
                 {
-                    cout << cur_char << '\n';
+                    cout << line << " | ";
+                    printf("syntax error found! (%c expected, found %c)\n", m_pairs[m_part1_stack.top()], cur_char);
+                    score += m_points[cur_char];
+                    break;
                 }
             }
         }
     }
 
-    return 0;
+    return score;
 }
 
 int main(int argc, char const *argv[])
@@ -49,6 +61,7 @@ int main(int argc, char const *argv[])
     string data_file = "day_010_example.txt";
     Solution solution(data_file);
 
-    solution.part1();
+    int points = solution.part1();
+    printf("points: %i\n", points);
     return 0;
 }
