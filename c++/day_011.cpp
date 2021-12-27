@@ -10,9 +10,21 @@
 ///////////////////////////////////////////////
 
 #include "day_011.h"
+#include <fstream>
 
 Solution::Answer Solution::get_answer()
 {
+    string line;
+    ifstream data_stream(m_data_file);
+    int current_line_number = 0;
+    while (getline(data_stream, line))
+    {
+        for (size_t i = 0; i < m_COLS; i++)
+        {
+            m_data[current_line_number][i] = line[i] - '0';
+        }
+    }
+
     return m_answer;
 }
 

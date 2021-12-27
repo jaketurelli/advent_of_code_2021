@@ -7,6 +7,9 @@ class Solution
 {
 private:
     string m_data_file;
+    static constexpr int m_ROWS = 10; // 100
+    static constexpr int m_COLS = 10; // 100
+    uint8_t m_data[m_ROWS][m_COLS] = {0};
 
 public:
     Solution(string file_path)
