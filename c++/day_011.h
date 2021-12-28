@@ -10,6 +10,7 @@ private:
     static constexpr int m_ROWS = 10; // 100
     static constexpr int m_COLS = 10; // 100
     uint8_t m_data[m_ROWS][m_COLS] = {0};
+    int m_step = 0;
 
 public:
     Solution(string file_path)
@@ -24,6 +25,10 @@ public:
 
 private:
     Answer m_answer;
+    void display_matrix();
+    bool increase_by_1();
+    bool increment_and_check_adjacents(int row, int col, bool increment_first);
+    void check_flashes();
 
 public:
     Answer get_answer();
