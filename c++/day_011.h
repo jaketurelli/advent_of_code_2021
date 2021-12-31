@@ -7,14 +7,14 @@ class Solution
 {
 private:
     string m_data_file;
-    static constexpr int m_ROWS = 10; // 100
-    static constexpr int m_COLS = 10; // 100
+    static constexpr int m_ROWS = 10;
+    static constexpr int m_COLS = 10;
+    uint32_t m_total_flashes;
     uint8_t m_data[m_ROWS][m_COLS] = {0};
-    int m_step = 0;
 
 public:
     Solution(string file_path)
-        : m_data_file(file_path){};
+        : m_data_file(file_path), m_total_flashes(0){};
     ~Solution(){};
 
     struct Answer
@@ -26,9 +26,10 @@ public:
 private:
     Answer m_answer;
     void display_matrix();
-    bool increase_by_1();
-    bool increment_and_check_adjacents(int row, int col, bool increment_first);
-    void check_flashes();
+    void increase_by_1();
+    void run_flashes();
+    void reset_flashes();
+    bool resolve_flashes(int row, int col, bool adjacent_flash = false);
 
 public:
     Answer get_answer();
