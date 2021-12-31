@@ -53,6 +53,7 @@ bool Solution::resolve_flashes(int row, int col, bool adjacent_flash)
     else if (m_data[row][col] > 9)
     {
         m_total_flashes++;
+        m_flashes_per_step++;
         m_data[row][col] = 0xff;
         flashes_occurred = true;
 
@@ -81,6 +82,7 @@ bool Solution::resolve_flashes(int row, int col, bool adjacent_flash)
         if (row != m_ROWS - 1)
             resolve_flashes(row + 1, col, true);
     }
+    return flashes_occurred;
 }
 
 void Solution::run_flashes()
@@ -117,14 +119,32 @@ Solution::Answer Solution::get_answer()
         current_line_number++;
     }
     display_matrix();
-    for (size_t i = 0; i < m_NUMBER_STEPS; i++)
+
+    size_t istep = 1;
+    bool simultaneous_flash = false;
+    while (istep <= m_NUMBER_STEPS || !simultaneous_flash)
     {
+        m_flashes_per_step = 0;
         increase_by_1();
         run_flashes();
         reset_flashes();
+
+        if (istep == m_NUMBER_STEPS)
+        {
+            display_matrix();
+            m_answer.part1 = m_total_flashes;
+        }
+
+        if (m_flashes_per_step == m_NUMBER_OCTOPI)
+        {
+            display_matrix();
+            m_answer.part2 = istep;
+            simultaneous_flash = true;
+        }
+
+        istep++;
     }
-    display_matrix();
-    m_answer.part1 = m_total_flashes;
+
     return m_answer;
 }
 
@@ -135,7 +155,9 @@ int main(int argc, char const *argv[])
     // string file_path = "day_011_example2.txt";
 
     Solution solution(file_path);
-    printf("part 1: %llu\n", solution.get_answer().part1);
-    // printf("part 2: %llu\n", solution.get_answer().part2);
+    size_t part1 = solution.get_answer().part1;
+    size_t part2 = solution.get_answer().part2;
+    printf("part 1: %llu\n", part1);
+    printf("part 2: %llu\n", part2);
     return 0;
 }

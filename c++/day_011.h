@@ -10,12 +10,14 @@ private:
     static constexpr int m_ROWS = 10;
     static constexpr int m_COLS = 10;
     static constexpr int m_NUMBER_STEPS = 100;
+    static constexpr uint8_t m_NUMBER_OCTOPI = m_ROWS * m_COLS;
     uint32_t m_total_flashes;
+    uint8_t m_flashes_per_step;
     uint8_t m_data[m_ROWS][m_COLS] = {0};
 
 public:
     Solution(string file_path)
-        : m_data_file(file_path), m_total_flashes(0){};
+        : m_data_file(file_path), m_total_flashes(0), m_flashes_per_step(0){};
     ~Solution(){};
 
     struct Answer
