@@ -9,6 +9,7 @@ private:
     string m_data_file;
     static constexpr int m_ROWS = 10;
     static constexpr int m_COLS = 10;
+    static constexpr int m_NUMBER_STEPS = 100;
     uint32_t m_total_flashes;
     uint8_t m_data[m_ROWS][m_COLS] = {0};
 

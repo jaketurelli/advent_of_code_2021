@@ -117,26 +117,14 @@ Solution::Answer Solution::get_answer()
         current_line_number++;
     }
     display_matrix();
-    bool not_done = true;
-    size_t step_number = 0;
-    while (not_done)
+    for (size_t i = 0; i < m_NUMBER_STEPS; i++)
     {
-        printf("after step %llu:\n", ++step_number);
         increase_by_1();
-
-        // display_matrix(); //testing
-
         run_flashes();
-
         reset_flashes();
-
-        if (step_number == 100)
-        {
-            display_matrix();
-            not_done = false;
-            m_answer.part1 = m_total_flashes;
-        }
     }
+    display_matrix();
+    m_answer.part1 = m_total_flashes;
     return m_answer;
 }
 
