@@ -24,11 +24,13 @@ private:
     struct Node
     {
         string name;
-        bool is_big;
+        const bool is_big;
         vector<Node *> neighbors;
+        bool is_open;
         Node(string _name, bool _is_big)
             : name(_name),
-              is_big(_is_big)
+              is_big(_is_big),
+              is_open(true)
         {
         }
     };
@@ -104,12 +106,17 @@ uint32_t Solution::getNumberPaths()
     return 0;
 }
 
-uint32_t Solution::get_number_paths(string start_node)
+uint32_t Solution::get_number_paths(string node_name)
 {
     uint32_t number_paths = 0;
-    cout << "checking paths for " << start_node << '\n';
+    cout << "checking paths for " << node_name << '\n';
 
-    auto neighbors = m_node_map[start_node]->neighbors;
+    Node curr_node = *m_node_map[node_name];
+
+    // we're here, so close the door on small ones
+    curr_node.is_open = curr_node.is_big ? true : false;
+
+    auto neighbors = curr_node.neighbors;
 
     if (neighbors.empty())
     {
@@ -120,23 +127,34 @@ uint32_t Solution::get_number_paths(string start_node)
     int count = 0;
     for (auto i = neighbors.begin(); i != neighbors.end(); i++)
     {
-        if (!(*i)->is_big)
+        Node next_node = **i;
+        if (next_node.is_open)
         {
-            neighbors.erase(neighbors.begin() + count);
+            get_number_paths(next_node.name);
         }
         else
         {
+            cout << "node " << next_node.name << "is closed!\n";
         }
-        number_paths++;
-        count++;
+
+        // if (!(*i)->is_big)
+        // {
+        //     neighbors.erase(neighbors.begin() + count);
+        // }
+        // else
+        // {
+        // }
+        // number_paths++;
+        // count++;
     }
+    cout << '\n';
 
     return 0;
 }
 
 int main(int argc, char const *argv[])
 {
-    string data_file = "day_012.txt";
+    string data_file = "day_012_example.txt";
     Solution solution(data_file);
     uint32_t part1 = solution.getNumberPaths();
     printf("part1: %lu\n", part1);
