@@ -106,6 +106,31 @@ uint32_t Solution::getNumberPaths()
 
 uint32_t Solution::get_number_paths(string start_node)
 {
+    uint32_t number_paths = 0;
+    cout << "checking paths for " << start_node << '\n';
+
+    auto neighbors = m_node_map[start_node]->neighbors;
+
+    if (neighbors.empty())
+    {
+        printf("empty!\n");
+        return 0;
+    }
+
+    int count = 0;
+    for (auto i = neighbors.begin(); i != neighbors.end(); i++)
+    {
+        if (!(*i)->is_big)
+        {
+            neighbors.erase(neighbors.begin() + count);
+        }
+        else
+        {
+        }
+        number_paths++;
+        count++;
+    }
+
     return 0;
 }
 
