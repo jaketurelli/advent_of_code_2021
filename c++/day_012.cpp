@@ -27,10 +27,12 @@ private:
         const bool is_big;
         vector<Node *> neighbors;
         bool is_open;
+        uint8_t number_of_visits;
         Node(string _name, bool _is_big)
             : name(_name),
               is_big(_is_big),
-              is_open(true)
+              is_open(true),
+              number_of_visits(0)
         {
         }
     };
@@ -106,6 +108,7 @@ uint32_t Solution::getNumberPaths()
 
     bool all_paths_found = false;
     (m_node_map["start"])->is_open = false;
+    (m_node_map["start"])->number_of_visits = 1;
     uint32_t number_paths = get_number_paths("start");
 
     return m_number_paths;
@@ -113,7 +116,6 @@ uint32_t Solution::getNumberPaths()
 
 uint32_t Solution::get_number_paths(string node_name)
 {
-    uint32_t number_paths = 0;
     // cout << "checking paths for " << node_name << '\n';
     cout << node_name;
 
@@ -123,11 +125,13 @@ uint32_t Solution::get_number_paths(string node_name)
         printf("\n");
         return 0;
     }
+    Node *curr_node_p = m_node_map[node_name];
+
+    curr_node_p->number_of_visits++;
 
     // we're here, so close the door on small ones
-    m_node_map[node_name]->is_open = m_node_map[node_name]->is_big ? true : false;
-
-    Node *curr_node_p = m_node_map[node_name];
+    if (curr_node_p->number_of_visits > 1 && !curr_node_p->is_big)
+        curr_node_p->is_open = false;
 
     auto neighbors = curr_node_p->neighbors;
 
@@ -153,20 +157,11 @@ uint32_t Solution::get_number_paths(string node_name)
         {
             // cout << "node [ " << next_node_p->name << " ] is closed!\n";
         }
-
-        // if (!(*i)->is_big)
-        // {
-        //     neighbors.erase(neighbors.begin() + count);
-        // }
-        // else
-        // {
-        // }
-        // number_paths++;
-        // count++;
     }
     if (dead_node)
         printf("dead!\n");
-    m_node_map[node_name]->is_open = true;
+    curr_node_p->is_open = true;
+    curr_node_p->number_of_visits = 0;
     // cout << '\n';
 
     return m_number_paths;
@@ -174,11 +169,11 @@ uint32_t Solution::get_number_paths(string node_name)
 
 int main(int argc, char const *argv[])
 {
-    // string data_file = "day_012_example.txt";
+    string data_file = "day_012_example.txt";
     // string data_file = "day_012_example1.txt";
     // string data_file = "day_012_example2.txt";
     // string data_file = "day_012_example3.txt";
-    string data_file = "day_012.txt";
+    // string data_file = "day_012.txt";
 
     Solution solution(data_file);
     uint32_t part1 = solution.getNumberPaths();
