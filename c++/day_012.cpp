@@ -36,6 +36,8 @@ private:
     };
     map<string, Node *> m_node_map;
 
+    uint32_t m_number_paths;
+
     bool is_big(string node_name);
 
     // map<string, vector<string>> m_node_names;
@@ -45,7 +47,9 @@ private:
 public:
     uint32_t
     getNumberPaths();
-    Solution(string data_file) : m_data_file(data_file){};
+    Solution(string data_file)
+        : m_data_file(data_file),
+          m_number_paths(0){};
     ~Solution(){};
 };
 
@@ -101,22 +105,31 @@ uint32_t Solution::getNumberPaths()
     }
 
     bool all_paths_found = false;
+    (m_node_map["start"])->is_open = false;
     uint32_t number_paths = get_number_paths("start");
 
-    return 0;
+    return m_number_paths;
 }
 
 uint32_t Solution::get_number_paths(string node_name)
 {
     uint32_t number_paths = 0;
-    cout << "checking paths for " << node_name << '\n';
+    // cout << "checking paths for " << node_name << '\n';
+    cout << node_name;
 
-    Node curr_node = *m_node_map[node_name];
+    if (node_name == "end")
+    {
+        m_number_paths++;
+        printf("\n");
+        return 0;
+    }
 
     // we're here, so close the door on small ones
-    curr_node.is_open = curr_node.is_big ? true : false;
+    m_node_map[node_name]->is_open = m_node_map[node_name]->is_big ? true : false;
 
-    auto neighbors = curr_node.neighbors;
+    Node *curr_node_p = m_node_map[node_name];
+
+    auto neighbors = curr_node_p->neighbors;
 
     if (neighbors.empty())
     {
@@ -125,16 +138,20 @@ uint32_t Solution::get_number_paths(string node_name)
     }
 
     int count = 0;
+    bool dead_node = true;
     for (auto i = neighbors.begin(); i != neighbors.end(); i++)
     {
-        Node next_node = **i;
-        if (next_node.is_open)
+        Node *next_node_p = *i;
+        if (next_node_p->is_open)
         {
-            get_number_paths(next_node.name);
+            // cout << "node [ " << next_node_p->name << " ] is open!\n";
+            cout << ", ";
+            dead_node = false;
+            get_number_paths(next_node_p->name);
         }
         else
         {
-            cout << "node " << next_node.name << "is closed!\n";
+            // cout << "node [ " << next_node_p->name << " ] is closed!\n";
         }
 
         // if (!(*i)->is_big)
@@ -147,14 +164,22 @@ uint32_t Solution::get_number_paths(string node_name)
         // number_paths++;
         // count++;
     }
-    cout << '\n';
+    if (dead_node)
+        printf("dead!\n");
+    m_node_map[node_name]->is_open = true;
+    // cout << '\n';
 
-    return 0;
+    return m_number_paths;
 }
 
 int main(int argc, char const *argv[])
 {
-    string data_file = "day_012_example.txt";
+    // string data_file = "day_012_example.txt";
+    // string data_file = "day_012_example1.txt";
+    // string data_file = "day_012_example2.txt";
+    // string data_file = "day_012_example3.txt";
+    string data_file = "day_012.txt";
+
     Solution solution(data_file);
     uint32_t part1 = solution.getNumberPaths();
     printf("part1: %lu\n", part1);
