@@ -160,8 +160,12 @@ uint32_t Solution::get_number_paths(string node_name)
     }
     if (dead_node)
         printf("dead!\n");
-    curr_node_p->is_open = true;
-    curr_node_p->number_of_visits = 0;
+    if (curr_node_p->number_of_visits > 1 && !curr_node_p->is_big)
+    {
+        curr_node_p->is_open = true;
+        curr_node_p->number_of_visits = 0;
+    }
+
     // cout << '\n';
 
     return m_number_paths;
