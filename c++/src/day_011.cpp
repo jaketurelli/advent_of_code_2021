@@ -150,7 +150,7 @@ Solution::Answer Solution::get_answer()
 
 int main(int argc, char const *argv[])
 {
-    string file_path = "day_011.txt";
+    string file_path = "../../data/day_011.txt";
     // string file_path = "day_011_example.txt";
     // string file_path = "day_011_example2.txt";
 
